@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+from numpy.typing import NDArray
 
-from afp_operations.transport import AgeGrid, finite_volume_step
+from afp_operations.transport import AgeGrid, FloatArray, finite_volume_step
 
 
 def mortality_hierarchy_model(
@@ -46,7 +47,14 @@ def mortality_hierarchy_model(
 
 
 def _synthetic_multigroup_counts() -> tuple[
-    np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, int, int, int
+    NDArray[np.float32],
+    NDArray[np.float32],
+    NDArray[np.int32],
+    NDArray[np.int32],
+    NDArray[np.int32],
+    int,
+    int,
+    int,
 ]:
     countries = 2
     years = 3
@@ -137,7 +145,7 @@ def smoke_inference(num_warmup: int = 10, num_samples: int = 10, seed: int = 0) 
     }
 
 
-def _draw_vector(samples: dict[str, Any], name: str, draws: int) -> np.ndarray:
+def _draw_vector(samples: dict[str, Any], name: str, draws: int) -> FloatArray:
     value = np.asarray(samples[name], dtype=float)
     if value.shape[0] != draws:
         raise ValueError(f"sample {name!r} must have leading draw dimension {draws}")
@@ -147,7 +155,7 @@ def _draw_vector(samples: dict[str, Any], name: str, draws: int) -> np.ndarray:
 def posterior_mortality_fv_projection(
     samples: dict[str, Any],
     *,
-    density: np.ndarray,
+    density: FloatArray,
     grid: AgeGrid,
     dt: float,
     inflow: float,

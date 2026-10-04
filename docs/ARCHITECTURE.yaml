@@ -10,6 +10,7 @@
       "verification": "Locked installation plus publication guard and redacted Gitleaks still include uv.lock."
     }
   },
+  "compatibility_decisions": [{"component": "bayesian NumPy boundaries", "library": "numpy.typing.NDArray", "decision": "Explicit float32/int32 synthetic-array types and shared FloatArray; no bare generic ndarray annotations", "reason": "NumPy stub defaults differ across locked Python environments; strict types must pass on Python 3.10 and 3.13", "fitness_test": "matrix CI strict mypy on both supported lanes"}],
   "package": "afp_operations",
   "status": "research_bootstrap_publication_guardrails",
   "principles": [
