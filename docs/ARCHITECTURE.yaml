@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "publication_file_exceptions": {
+    "uv.lock": {
+      "max_kib": 1024,
+      "owner": "publication-maintainers",
+      "reason": "Generated cross-version/platform dependency lock, including optional numerical backends; preserving reproducible hashes outweighs the generic 500 KiB hook limit.",
+      "risk": "Large lock diffs can hide dependency or index changes; this is not a secret-scan exclusion.",
+      "refactoring_trigger": "Review dependency groups before exceeding 1 MiB; the size fitness test remains fail-closed.",
+      "verification": "Locked installation plus publication guard and redacted Gitleaks still include uv.lock."
+    }
+  },
+  "package": "afp_operations",
+  "status": "research_bootstrap_publication_guardrails",
+  "principles": [
+    "No live transfers, custody, banking, or hidden network calls.",
+    "Policy fixtures are dated research inputs, not official current-law claims.",
+    "Numerical kernels must expose mass-balance and diagnostics boundaries.",
+    "Public artifacts contain no private member data, credentials, raw workbooks, databases, or agent histories."
+  ],
+  "max_source_lines_without_exception": 500,
+  "max_internal_fanout_without_exception": 7,
+  "directory_file_count_limit": 10,
+  "directory_file_count_exceptions": {},
+  "legacy_size_exceptions": {},
+  "legacy_fanout_exceptions": {},
+  "src_entries": {
+    "src/afp_operations/__init__.py": "pure public API re-exports",
+    "src/afp_operations/api.py": "capability discovery and executable synthetic FV/FEM lifecycle",
+    "src/afp_operations/cli.py": "JSON CLI commands",
+    "src/afp_operations/__main__.py": "module entry point",
+    "src/afp_operations/policy.py": "explicit dated research policy fixtures",
+    "src/afp_operations/finance.py": "Decimal contributions, accounts, annuity factor",
+    "src/afp_operations/ops.py": "bounded in-memory posting/reconciliation/quote workflow",
+    "src/afp_operations/transport.py": "conservative FV plus genuine implicit P1 SUPG FEM",
+    "src/afp_operations/bayes.py": "optional country/year/group hierarchy and actual posterior-to-FV smoke",
+    "src/afp_operations/py.typed": "PEP 561 marker"
+  },
+  "import_boundaries": {
+    "forbidden_text_in_source": [
+      "requests.",
+      "httpx.",
+      "boto3",
+      "live_transfer=True"
+    ]
+  },
+  "publication_contract": {
+    "public_repositories": [
+      "https://github.com/googa27/afp-operations",
+      "https://github.com/googa27/pension-systems-lab"
+    ],
+    "hero_asset": "docs/assets/afp_operations_hero.png",
+    "private_boundary": [
+      "no credentials",
+      "no raw workbooks or PDFs",
+      "no private integration details",
+      "no agent histories",
+      "no member data"
+    ],
+    "chile_regulation_sources": [
+      "https://www.bcn.cl/leychile/navegar?idNorma=7147",
+      "https://www.bcn.cl/leychile/navegar?idNorma=1212060",
+      "https://www.spensiones.cl/portal/institucional/594/w3-article-16483.html"
+    ]
+  },
+  "quality_gates": [
+    "uv run pytest",
+    "uv run ruff check .",
+    "uv run ruff format --check .",
+    "uv run mypy",
+    "uv build",
+    "uv run python scripts/publication_guard.py --mode git",
+    "python scripts/scan_publication.py"
+  ],
+  "source_entry_limit": 10,
+  "source_entry_exceptions": {},
+  "interfaces": {
+    "agent": [
+      "AGENTS.md",
+      "JSON CLI capabilities",
+      "publication guard"
+    ],
+    "human": [
+      "typed importable API",
+      "deterministic notebook/script examples"
+    ],
+    "extension_points": [
+      "public data provider",
+      "dated policy provider",
+      "numerical backend",
+      "artifact renderer"
+    ]
+  },
+  "data_architecture": {
+    "flow": [
+      "source registry",
+      "immutable acquired input",
+      "canonical contracts",
+      "features/model",
+      "governed outputs",
+      "read-only rendering"
+    ],
+    "required": [
+      "units",
+      "grain",
+      "classification",
+      "lineage",
+      "quality",
+      "vintage",
+      "content hash",
+      "license status"
+    ],
+    "private": "external least-privileged adapters; no public export"
+  }
+}
