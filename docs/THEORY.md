@@ -37,6 +37,8 @@ transport residual using backward Euler:
 ```
 
 with an essential inflow value at age 0 and natural outflow at the maximum age.
+Element assembly and nonzero Dirichlet elimination use scikit-fem's `asm`,
+`condense`, and `solve` APIs ([official reference](https://scikit-fem.readthedocs.io/en/stable/api.html#skfem.utils.condense)).
 The returned density is the solved P1 cell-average projection itself; it is not a
 characteristics oracle substitution. SUPG is numerical stabilization, not a demographic
 process. Outputs are not clipped, and the mass-balance residual is the reported physical

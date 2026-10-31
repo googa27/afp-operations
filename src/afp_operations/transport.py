@@ -214,13 +214,14 @@ def fem_transport_step(
     if mortality < 0 or inflow < 0:
         raise ValueError("mortality and inflow must be non-negative")
     try:
-        from scipy.sparse.linalg import spsolve  # type: ignore[import-untyped]
         from skfem import (  # type: ignore[import-untyped]
             Basis,
             BilinearForm,
             ElementLineP1,
             MeshLine,
             asm,
+            condense,
+            solve,
         )
         from skfem.helpers import grad  # type: ignore[import-untyped]
     except Exception as exc:  # pragma: no cover - dependency declared in base package
@@ -255,16 +256,13 @@ def fem_transport_step(
     old_nodes = _nodes_from_cell_averages(arr)
     rhs = np.asarray(rhs_operator @ old_nodes, dtype=float)
 
-    # Strongly enforce the inflow Dirichlet degree of freedom by exact elimination.
-    n_dofs = old_nodes.size
-    known = 0
-    unknown = np.arange(1, n_dofs)
-    rhs_unknown = rhs[unknown] - np.asarray(lhs[unknown, known].toarray()).reshape(-1) * inflow
-    lhs_unknown = lhs[unknown][:, unknown].tocsc()
-    solved_unknown = np.asarray(spsolve(lhs_unknown, rhs_unknown), dtype=float)
-    solved_nodes = np.empty(n_dofs, dtype=float)
-    solved_nodes[known] = inflow
-    solved_nodes[unknown] = solved_unknown
+    # Delegate nonzero Dirichlet elimination and expansion to scikit-fem.
+    boundary_values = np.zeros_like(old_nodes)
+    boundary_values[0] = inflow
+    inflow_dofs = basis.get_dofs(lambda x: x[0] == grid.start)
+    solved_nodes = np.asarray(
+        solve(*condense(lhs, rhs, x=boundary_values, D=inflow_dofs)), dtype=float
+    )
     solved_cells = _cell_averages_from_nodes(solved_nodes)
     report = _fem_mass_report(arr, solved_cells, solved_nodes, grid, dt, mortality, inflow)
     return FemResult(
