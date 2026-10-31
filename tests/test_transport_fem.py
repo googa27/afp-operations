@@ -98,3 +98,38 @@ def test_fem_supg_solve_converges_to_smooth_manufactured_transport_solution() ->
         final_errors.append(float(np.sqrt(np.mean((fem.density - exact) ** 2))))
         assert fem.assembly["solution_min"] > 0.0
     assert final_errors[1] < 0.65 * final_errors[0]
+
+
+def test_fem_preserves_constant_steady_profile_and_physical_mass() -> None:
+    grid = AgeGrid(2.0, 4.0, 0.1)
+    density = np.full(grid.n_cells, 3.0)
+    for _ in range(10):
+        result = fem_transport_step(density, grid, dt=0.1, mortality=0.0, inflow=3.0)
+        density = result.density
+        assert result.mass_report.final_mass == pytest.approx(6.0)
+        assert result.mass_report.residual == pytest.approx(0.0, abs=2e-13)
+    np.testing.assert_allclose(density, 3.0, atol=2e-13)
+
+
+def test_fem_converges_over_fixed_time_with_time_dependent_inflow() -> None:
+    errors = []
+    residuals = []
+    for elements in (40, 80, 160):
+        grid = AgeGrid(0.0, 10.0, 10.0 / elements)
+        ages = grid.cell_centers
+        density = 1.0 + 0.2 * np.sin(2.0 * np.pi * ages / 10.0)
+        dt = 1.0 / elements
+        max_residual = 0.0
+        for step in range(elements):
+            time = (step + 1) * dt
+            inflow = (1.0 + 0.2 * np.sin(-2.0 * np.pi * time / 10.0)) * np.exp(-0.1 * time)
+            result = fem_transport_step(density, grid, dt, mortality=0.1, inflow=float(inflow))
+            density = result.density
+            max_residual = max(max_residual, abs(result.mass_report.residual))
+        exact = (1.0 + 0.2 * np.sin(2.0 * np.pi * (ages - 1.0) / 10.0)) * np.exp(-0.1)
+        errors.append(float(np.sqrt(np.mean((density - exact) ** 2))))
+        residuals.append(max_residual)
+    assert errors[1] < 0.65 * errors[0]
+    assert errors[2] < 0.65 * errors[1]
+    assert residuals[1] < 0.4 * residuals[0]
+    assert residuals[2] < 0.4 * residuals[1]
